@@ -1,0 +1,14 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder
+
+# Load the dataset
+data = pd.read_csv('AmesHousing.csv')
+
+# Seperate the feature columns and the target column 'SalePrice'
+X = data.drop(columns=['SalePrice'])
+y = data['SalePrice']
