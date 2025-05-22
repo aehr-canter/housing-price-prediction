@@ -4,21 +4,53 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import joblib
 
 
 def preprocess_housing_data(csv_file_path, target_column='SalePrice', 
                            numeric_impute_strategy='median', 
                            categorical_impute_strategy='most_frequent',
                            return_preprocessor=False):
+    """
+    Load and preprocess housing data with automatic feature type detection.
     
+    Parameters:
+    -----------
+    csv_file_path : str
+        Path to the CSV file containing the housing data
+    target_column : str, default='SalePrice'
+        Name of the target column to separate from features
+    numeric_impute_strategy : str, default='median'
+        Strategy for imputing missing numeric values ('mean', 'median', 'most_frequent')
+    categorical_impute_strategy : str, default='most_frequent'
+        Strategy for imputing missing categorical values
+    return_preprocessor : bool, default=False
+        Whether to return the fitted preprocessor object along with the data
+    
+    Returns:
+    --------
+    X_preprocessed : array-like
+        Preprocessed feature matrix
+    y : Series
+        Target variable
+    preprocessor : ColumnTransformer (optional)
+        Fitted preprocessor object if return_preprocessor=True
+    """
+    
+    # Load the dataset
     data = pd.read_csv(csv_file_path)
     
+    # Separate the feature columns and the target column
     X = data.drop(columns=[target_column])
     y = data[target_column]
-
+    
+    # Identify numeric and categorical columns
     numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
     categorical_features = X.select_dtypes(include=['object']).columns
     
+    # Create pipelines for the numeric and categorical data
     numeric_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy=numeric_impute_strategy)),
         ('scaler', StandardScaler())
@@ -29,6 +61,7 @@ def preprocess_housing_data(csv_file_path, target_column='SalePrice',
         ('onehot', OneHotEncoder(handle_unknown='ignore'))
     ])
     
+    # Combine the pipelines using ColumnTransformer
     preprocessor = ColumnTransformer(
         transformers=[
             ('num', numeric_transformer, numeric_features),
@@ -36,35 +69,10 @@ def preprocess_housing_data(csv_file_path, target_column='SalePrice',
         ]
     )
     
+    # Use the preprocessor on the data
     X_preprocessed = preprocessor.fit_transform(X)
     
     if return_preprocessor:
         return X_preprocessed, y, preprocessor
     else:
         return X_preprocessed, y
-
-
-def preprocess_new_data(X_new, fitted_preprocessor):
-    
-    return fitted_preprocessor.transform(X_new)
-
-
-if __name__ == "__main__":
-    
-    X_processed, y = preprocess_housing_data('AmesHousing.csv')
-    
-    X_processed, y, preprocessor = preprocess_housing_data(
-        'AmesHousing.csv', 
-        return_preprocessor=True
-    )
-    
-    X_train, X_test, y_train, y_test = train_test_split(
-        X_processed, y, test_size=0.2, random_state=42
-    )
-    
-    print(f"Training set shape: {X_train.shape}")
-    print(f"Test set shape: {X_test.shape}")
-    print(f"Target variable shape: {y.shape}")
-    
-    # If you have new data later, you can use:
-    # X_new_processed = preprocess_new_data(X_new, preprocessor)
