@@ -43,7 +43,6 @@ def train_and_evaluate_model(X_preprocessed, y, model=None, test_size=0.2,
     print(f'RMSE: {rmse:.2f}')
     print(f'R²: {r2:.4f}')
     
-    # Save model if requested
     if save_model:
         filename = model_filename or 'trained_model.pkl'
         joblib.dump(model, filename)

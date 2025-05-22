@@ -1,7 +1,7 @@
+from buildapp import *
+
 def main():
-    """
-    Main Streamlit application function.
-    """
+
     # Page configuration
     st.set_page_config(
         page_title="House Price Predictor",

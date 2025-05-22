@@ -13,31 +13,6 @@ def preprocess_housing_data(csv_file_path, target_column='SalePrice',
                            numeric_impute_strategy='median', 
                            categorical_impute_strategy='most_frequent',
                            return_preprocessor=False):
-    """
-    Load and preprocess housing data with automatic feature type detection.
-    
-    Parameters:
-    -----------
-    csv_file_path : str
-        Path to the CSV file containing the housing data
-    target_column : str, default='SalePrice'
-        Name of the target column to separate from features
-    numeric_impute_strategy : str, default='median'
-        Strategy for imputing missing numeric values ('mean', 'median', 'most_frequent')
-    categorical_impute_strategy : str, default='most_frequent'
-        Strategy for imputing missing categorical values
-    return_preprocessor : bool, default=False
-        Whether to return the fitted preprocessor object along with the data
-    
-    Returns:
-    --------
-    X_preprocessed : array-like
-        Preprocessed feature matrix
-    y : Series
-        Target variable
-    preprocessor : ColumnTransformer (optional)
-        Fitted preprocessor object if return_preprocessor=True
-    """
     
     # Load the dataset
     data = pd.read_csv(csv_file_path)

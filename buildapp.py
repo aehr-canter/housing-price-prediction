@@ -7,23 +7,7 @@ from typing import Dict, Any, Optional
 
 def load_model_components(model_path: str = 'house_price_model.pkl', 
                          preprocessor_path: str = 'preprocessor.pkl'):
-    """
-    Load the trained model and preprocessor.
     
-    Parameters:
-    -----------
-    model_path : str
-        Path to the saved model file
-    preprocessor_path : str
-        Path to the saved preprocessor file
-    
-    Returns:
-    --------
-    model : sklearn model
-        Loaded trained model
-    preprocessor : sklearn preprocessor
-        Loaded fitted preprocessor
-    """
     try:
         model = joblib.load(model_path)
         preprocessor = joblib.load(preprocessor_path)
@@ -37,13 +21,7 @@ def load_model_components(model_path: str = 'house_price_model.pkl',
 
 
 def get_default_features() -> Dict[str, Any]:
-    """
-    Get default values for all housing features.
-    
-    Returns:
-    --------
-    dict : Default feature values
-    """
+
     return {
         'Central Air': 'Y',
         'House Style': '1Story',
@@ -122,16 +100,9 @@ def get_default_features() -> Dict[str, Any]:
 
 
 def create_user_inputs() -> Dict[str, Any]:
-    """
-    Create Streamlit input widgets for user-configurable features.
-    
-    Returns:
-    --------
-    dict : User input values
-    """
+
     st.subheader("Key House Features")
     
-    # Create columns for better layout
     col1, col2 = st.columns(2)
     
     with col1:
@@ -159,13 +130,7 @@ def create_user_inputs() -> Dict[str, Any]:
 
 
 def create_advanced_inputs() -> Dict[str, Any]:
-    """
-    Create advanced input options for more detailed customization.
-    
-    Returns:
-    --------
-    dict : Advanced input values
-    """
+
     advanced_inputs = {}
     
     if st.checkbox("Show Advanced Options"):
@@ -199,55 +164,23 @@ def create_advanced_inputs() -> Dict[str, Any]:
 
 
 def create_input_dataframe(user_inputs: Dict[str, Any], advanced_inputs: Dict[str, Any]) -> pd.DataFrame:
-    """
-    Create a DataFrame with all input features for prediction.
-    
-    Parameters:
-    -----------
-    user_inputs : dict
-        Basic user input values
-    advanced_inputs : dict
-        Advanced user input values
-    
-    Returns:
-    --------
-    pd.DataFrame : Input data ready for preprocessing
-    """
-    # Start with default features
+
     features = get_default_features()
     
-    # Update with user inputs
     features.update(user_inputs)
     features.update(advanced_inputs)
     
-    # Convert to DataFrame with single row
     input_data = pd.DataFrame({key: [value] for key, value in features.items()})
     
     return input_data
 
 
 def make_prediction(model, preprocessor, input_data: pd.DataFrame) -> float:
-    """
-    Make a house price prediction.
-    
-    Parameters:
-    -----------
-    model : sklearn model
-        Trained model
-    preprocessor : sklearn preprocessor
-        Fitted preprocessor
-    input_data : pd.DataFrame
-        Input features
-    
-    Returns:
-    --------
-    float : Predicted house price
-    """
+
     try:
-        # Preprocess the input features
+
         input_features_preprocessed = preprocessor.transform(input_data)
         
-        # Make prediction
         prediction = model.predict(input_features_preprocessed)
         
         return prediction[0]
@@ -258,17 +191,9 @@ def make_prediction(model, preprocessor, input_data: pd.DataFrame) -> float:
 
 
 def display_prediction_result(prediction: float):
-    """
-    Display the prediction result with formatting.
-    
-    Parameters:
-    -----------
-    prediction : float
-        Predicted house price
-    """
+
     st.success(f"🏠 **Predicted House Price: ${prediction:,.2f}**")
     
-    # Add some context
     if prediction > 200000:
         st.info("💰 This is a high-value property")
     elif prediction > 100000:
